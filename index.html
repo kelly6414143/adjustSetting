@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Adjust創建應用</title>
+  </head>
+  <style>
+    .fullscreen {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 15px 39px 40px;
+    }
+
+    .flex {
+      display: flex;
+      align-items: center;
+    }
+
+    .flex-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flex-wrap {
+      flex-wrap: wrap;
+    }
+
+    .flex-inline {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .flex-top {
+      display: flex;
+      align-items: start;
+    }
+
+    .flex-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mr-center {
+      margin: 0 auto;
+    }
+
+    .item {
+      padding: 10px 8px;
+    }
+
+    .input-wrapper {
+      line-height: 24px;
+    }
+
+    .ml-4 {
+      margin-left: 4px;
+    }
+
+    .ml-8 {
+      margin-left: 8px;
+    }
+
+    .mr-4 {
+      margin-right: 4px;
+    }
+
+    .mr-12 {
+      margin-right: 12px;
+    }
+
+    .mr-45 {
+      margin-right: 45px;
+    }
+
+    .mb-4 {
+      margin-bottom: 4px;
+    }
+
+    .my-8 {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    .my-12 {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .w-90 {
+      width: 90px;
+    }
+
+    .input-content {
+      width: 240px;
+      height: 25px;
+      padding: 0px 4px;
+    }
+
+    .b-1 {
+      border-width: 1px;
+      border-style: solid;
+      border-color: transparent;
+      border-radius: 5px;
+    }
+
+    .red-color {
+      color: red;
+      font-size: 14px;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 4px solid #ccc;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .none {
+      display: none;
+    }
+
+    .copy_btn {
+      background: transparent;
+      border: 1px solid #aaa;
+      border-radius: 15px;
+      padding: 3px 8px;
+    }
+
+    .create_btn {
+      width: 100%;
+      background: rgb(42, 168, 247);
+      border: 1px solid transparent;
+      border-radius: 5px;
+      padding: 10px 20px;
+    }
+
+    .auth_btn {
+      display: none;
+      width: 100%;
+      background: rgb(42, 168, 247);
+      border: 1px solid transparent;
+      border-radius: 5px;
+      padding: 10px 20px;
+    }
+
+    .check_account_btn {
+      display: none;
+    }
+
+    .spinner_location {
+      position: absolute;
+    }
+
+    .footer_btn_wrapper {
+      margin-top: 15px;
+    }
+
+    .pointer {
+      cursor: pointer;
+    }
+
+    .mt-35 {
+      margin-top: 35px;
+    }
+
+    .switch_position {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+    .switch {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 15px;
+      margin-right: 5px;
+    }
+
+    .switch-pot {
+      width: 5px;
+      height: 5px;
+      background: red;
+      border-radius: 50%;
+    }
+
+    .reminder-word {
+      font-size: 12px;
+    }
+
+    .clear_btn {
+      position: absolute;
+      right: 5px;
+      bottom: 15px;
+      width: 50px;
+    }
+
+    .second_text {
+      color: grey;
+      font-size: 12px;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background-color: #333;
+      margin-top: -5px;
+      margin-bottom: 20px;
+    }
+
+    .switch_to_auth_btn {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      background-color: gold;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 3px 8px;
+    }
+
+    .switch_to_create_btn {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      background-color: gold;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 3px 8px;
+    }
+
+    .auth_panel {
+      display: none;
+    }
+
+    .auth_textarea {
+      display: none;
+    }
+
+    .gap-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 10px;
+    }
+
+    .custom-checkbox {
+      position: relative;
+      padding-left: 25px;
+      cursor: pointer;
+      user-select: none;
+      display: inline-block;
+      line-height: 20px;
+    }
+
+    .custom-checkbox input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    .custom-checkbox span {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 14px;
+      width: 14px;
+      background-color: #eee;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .custom-checkbox input:checked ~ span {
+      background-color: #f00;
+      border-color: #f00;
+    }
+
+    .custom-checkbox input:disabled ~ span {
+      background-color: #ddd;
+      border-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    .custom-checkbox input:checked:disabled ~ span {
+      background-color: #f00;
+      border-color: #f00;
+    }
+
+    .custom-checkbox span::after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    .custom-checkbox input:checked ~ span::after {
+      display: block;
+      left: 5px;
+      top: 1px;
+      width: 5px;
+      height: 8px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+  </style>
+  <body class="flex-col flex-center fullscreen">
+    <div class="wrapper">
+      <div class="switch switch_position flex-center">
+        <span id="switchPot" class="switch-pot"></span>
+        <span id="switch" class="ml-4">未啟用</span>
+      </div>
+
+      <button
+        id="switchToAuthBtn"
+        class="switch_to_auth_btn pointer"
+        onclick="onHandleSwitchToAuth()"
+      >
+        切換到開通帳號/授權應用
+      </button>
+      <button
+        id="switchToCreateBtn"
+        class="switch_to_create_btn pointer"
+        onclick="onHandleSwitchToCreate()"
+      >
+        切換到創建應用
+      </button>
+
+      <h1 id="title">Adjust創建應用</h1>
+      <div class="divider"></div>
+      <div class="flex">
+        <div
+          id="createTextarea"
+          style="width: 200px"
+          class="create_textarea mr-45"
+        >
+          <div style="position: relative; width: 100%">
+            <textarea
+              id="createTextContent"
+              style="
+                width: 100%;
+                height: 200px;
+                padding: 5px;
+                word-break: break-all;
+              "
+              placeholder="請貼上
+平台:
+推广码:
+邮箱:
+--------------------
+平台:other
+包名/创建包名:
+币种:
+邮箱:
+打开S2S"
+              oninput="onHandleCreateTextarea(event)"
+            ></textarea>
+            <button class="clear_btn" onclick="onHandleRemoveCreateTextarea()">
+              清除
+            </button>
+          </div>
+        </div>
+
+        <div id="authTextarea" style="width: 200px" class="auth_textarea mr-45">
+          <div style="position: relative; width: 100%">
+            <textarea
+              id="authTextContent"
+              style="
+                width: 100%;
+                height: 200px;
+                padding: 5px;
+                word-break: break-all;
+              "
+              placeholder="請貼上
+应用名/包名:
+权限:
+邮箱:
+--------------------
+邮箱:"
+              oninput="onHandleAuthTextarea(event)"
+            ></textarea>
+            <button class="clear_btn" onclick="onHandleRemoveAuthTextarea()">
+              清除
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div id="createPanel">
+            <div class="flex-top my-8 ml-8">
+              <div class="flex-center">
+                <span class="red-color">*</span>
+                <span class="w-90 mr-12">平台</span>
+              </div>
+              <div id="moduleRadios" class="flex-col"></div>
+            </div>
+            <div class="flex input-wrapper my-8">
+              <div id="channel" class="flex-center b-1 item">
+                <span style="color: transparent">*</span>
+                <span class="w-90 mr-12">推廣碼</span>
+                <input disabled id="channelInput" class="input-content" />
+              </div>
+            </div>
+            <div class="flex input-wrapper my-8">
+              <div id="name" class="flex-center b-1 item">
+                <span style="color: transparent">*</span>
+                <span class="w-90 mr-12">包名</span>
+                <input disabled id="nameInput" class="input-content" />
+              </div>
+            </div>
+            <div class="flex input-wrapper my-8">
+              <div id="currency" class="flex-center b-1 item">
+                <span style="color: transparent">*</span>
+                <span class="w-90 mr-12">幣種</span>
+                <div class="flex-col">
+                  <input disabled id="currencyInput" class="input-content" />
+                  <span
+                    id="currencyValidText"
+                    class="ml-4 reminder-word"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="authPanel" class="auth_panel">
+            <div class="flex input-wrapper my-8">
+              <div id="appNameAuth" class="flex-center b-1 item">
+                <span style="color: transparent">*</span>
+                <span class="w-90 mr-12">應用名</span>
+                <div class="flex-col">
+                  <input disabled id="appNameAuthInput" class="input-content" />
+                  <span
+                    id="appNameAuthValidText"
+                    class="ml-4 reminder-word"
+                  ></span>
+                </div>
+              </div>
+            </div>
+            <div class="flex input-wrapper my-8">
+              <div class="flex-center b-1 item">
+                <span style="color: transparent">*</span>
+                <span class="w-90 mr-12">權限</span>
+                <div class="gap-4">
+                  <label disabled>
+                    <input
+                      type="radio"
+                      name="auth"
+                      value="editor"
+                      checked
+                      disabled="true"
+                    />
+                    編輯
+                  </label>
+                  <label disabled>
+                    <input
+                      type="radio"
+                      name="auth"
+                      value="reader"
+                      disabled="true"
+                    />
+                    查看
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex input-wrapper my-8">
+            <div id="email" class="flex-center b-1 item">
+              <span class="red-color">*</span>
+              <span class="w-90 mr-12">郵箱</span>
+              <div class="flex-col">
+                <input disabled="true" id="emailInput" class="input-content" />
+                <span id="emailValidText" class="ml-4 reminder-word"></span>
+              </div>
+            </div>
+            <button
+              id="checkAccountBtn"
+              class="ml-4 pointer check_account_btn"
+              onclick="onHandleCheckAccount()"
+            >
+              郵箱狀態
+            </button>
+          </div>
+          <div id="openS2S" class="custom-checkbox">
+            <input type="checkbox" id="openS2SCheckbox" disabled /><span></span
+            >打开S2S
+          </div>
+        </div>
+      </div>
+
+      <div id="createAppName" class="flex-col my-8 ml-8 mt-35">
+        <div class="flex mb-4">
+          <span>應用名：</span>
+          <span id="appName"></span>
+          <button class="ml-4 copy_btn pointer" onclick="onHandleCopy()">
+            複製
+          </button>
+        </div>
+        <span id="appNameValidText" class="mr-4 reminder-word"></span>
+      </div>
+
+      <!-- <button id="loginBtn">登入</button> -->
+      <div class="flex-center footer_btn_wrapper">
+        <button id="createBtn" class="create_btn pointer">創建應用</button>
+        <button id="authBtn" class="auth_btn pointer">開通帳號/授權應用</button>
+        <div id="spinner" class="spinner spinner_location none"></div>
+      </div>
+
+      <!-- <button id="logoutBtn">登出</button> -->
+
+      <!-- <pre id="result">結果會顯示在這裡</pre> -->
+    </div>
+
+    <script>
+      const defaultAppToken = "w5laztwplekg"; //demo
+      let users = [];
+      let isEmailValid = false;
+      let isCurrencylValid = false;
+      let moduleObj = ""; //站點&市場
+      let channelInput = ""; //推廣碼
+      let emailInput = ""; //郵箱
+      let appNameAuthInput = ""; //應用名
+      let nameInput = ""; //包名
+      let currencyInput = ""; //幣種
+      let userData = {}; //郵箱使用者資料
+      let currencyData = {}; //前的貨幣資料
+      let appList = []; //應用列表
+      let currencies = []; //貨幣列表
+      let appObj = {}; //目前創建app資料
+      let isCreatedApp = false; //應用名是否已創建過
+      let isLogin = false; //是否已登入
+      let modal = "create"; // 創建應用模式(create)/  開通帳號/授權應用模式(auth)
+      let site = "dp"; //單站(dp)/ 非單站(other)
+      let isAppNameAuthValid = false;
+      let appRole = "editor"; // 編輯者(editor)/ 查看(reader)
+      let isOpenS2s = false;
+      let currentS2sToken = "";
+      const moduleList = [
+        {
+          label: "Oi巴西單站",
+          siteId: "551003",
+          currency: "BRL",
+          key: "oi",
+        },
+        {
+          label: "JKT印尼單站",
+          siteId: "621007",
+          currency: "IDR",
+          key: "jktjkt",
+        },
+        {
+          label: "OKJKT印尼單站",
+          siteId: "621008",
+          currency: "IDR",
+          key: "okjkt",
+        },
+        {
+          label: "iDRok直播單站",
+          siteId: "621009",
+          currency: "IDR",
+          key: "idrok",
+        },
+        {
+          label: "JKT8印尼單站",
+          siteId: "621010",
+          currency: "IDR",
+          key: "jkt8",
+        },
+        {
+          label: "rprprp印尼單站",
+          siteId: "621011",
+          currency: "IDR",
+          key: "rprprp",
+        },
+        {
+          label: "其他",
+          siteId: "br",
+          key: "other",
+        },
+      ];
+
+      // document.getElementById("loginBtn").addEventListener("click", login);
+      document.getElementById("createBtn").addEventListener("click", createApp);
+      document.getElementById("authBtn").addEventListener("click", authUserApp);
+      // document.getElementById("logoutBtn").addEventListener("click", logout);
+
+      (async () => {
+        await init();
+      })();
+
+      function initObj() {
+        isEmailValid = false;
+        isCurrencylValid = false;
+        moduleObj = "";
+        channelInput = "";
+        emailInput = "";
+        nameInput = "";
+        currencyInput = "";
+        userData = {};
+        currencyData = {};
+        appList = [];
+        currencies = [];
+        appObj = {};
+        isCreatedApp = false;
+        site = "dp";
+        isAppNameAuthValid = false;
+      }
+
+      async function init() {
+        const moduleRadiosContainer = document.getElementById("moduleRadios");
+        const token = localStorage.getItem("authToken");
+        const accountId = localStorage.getItem("accountId");
+
+        moduleList.forEach((item, index) => {
+          const label = document.createElement("label");
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "module";
+          input.value = item.siteId;
+          input.disabled = true;
+          if (index === 0) input.checked = true;
+
+          input.dataset.label = item.label;
+
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(item.label));
+
+          moduleRadiosContainer.appendChild(label);
+        });
+
+        const selected = document.querySelector('input[name="module"]:checked');
+        if (selected) {
+          moduleObj = moduleList.find((el) => el.siteId === selected.value);
+          updateAppName();
+        }
+
+        const authelected = document.querySelector(
+          'input[name="auth"]:checked'
+        );
+        if (authelected) {
+          appRole = authelected.value;
+        }
+
+        const radios = document.querySelectorAll('input[name="module"]');
+        radios.forEach((radio) => {
+          radio.addEventListener("change", (event) => {
+            if (event.target.checked) {
+              moduleObj = moduleList.find(
+                (el) => el.siteId === event.target.value
+              );
+              updateAppName();
+            }
+          });
+        });
+
+        const authRadios = document.querySelectorAll('input[name="auth"]');
+        authRadios.forEach((radio) => {
+          radio.addEventListener("change", () => {
+            const authelected = document.querySelector(
+              'input[name="auth"]:checked'
+            ).value;
+            appRole = authelected;
+          });
+        });
+
+        if (!!token) {
+          await getAccount();
+        } else {
+          await login();
+        }
+      }
+
+      async function fetchApi({
+        apiUrl,
+        method,
+        headers = {},
+        body,
+        callback,
+        errorCallback,
+      }) {
+        try {
+          const token = localStorage.getItem("authToken");
+          const response = await fetch(apiUrl, {
+            method,
+            headers: {
+              "Content-Type": "application/json",
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+              ...headers,
+            },
+            body,
+          });
+
+          if (!response.ok) throw new Error("網路回應錯誤");
+          let data = null;
+          if (
+            (response.status === 200 || response.status === 201) &&
+            response?.statusText !== "No Content"
+          ) {
+            data = await response?.json();
+          }
+
+          // document.getElementById("result").textContent = `${apiUrl}　獲取成功`;
+          if (callback) callback(data);
+          return data;
+        } catch (error) {
+          // document.getElementById("result").textContent =
+          //   "錯誤：" + error.message;
+          // console.error(error);
+          if (errorCallback) errorCallback();
+          return false;
+        }
+      }
+
+      async function login() {
+        const data = await fetchApi({
+          apiUrl: "https://api.adjust.com/accounts/users/sign_in",
+          method: "POST",
+          body: JSON.stringify({
+            user: {
+              email: atob("dGVjaGFkanVzdDA1MTlAZ21haWwuY29t"),
+              password: atob("QHRlY2g2NjY2ISEh"),
+              remember_me: false,
+            },
+          }),
+        });
+
+        if (data?.authentication_token) {
+          localStorage.setItem("authToken", data.authentication_token);
+          getAccount();
+        }
+      }
+
+      // 取得登入資訊
+      async function getAccount() {
+        const data = await fetchApi({
+          apiUrl: "https://api.adjust.com/accounts/current_account",
+          method: "GET",
+          errorCallback: () => {
+            login();
+          },
+        });
+
+        if (data?.id) {
+          const switchEl = document.getElementById("switch");
+          const switchPotEl = document.getElementById("switchPot");
+          localStorage.setItem("accountId", data.id);
+          await getUsers();
+          await getAppList();
+          await getCurrencies();
+          switchEl.textContent = "可使用";
+          switchPotEl.style.background = "green";
+        }
+      }
+
+      // 增加應用
+      async function createApp() {
+        const isCheck = check();
+        let result = null;
+        if (!isCheck) return;
+        const currency =
+          site === "dp" ? moduleObj?.currency || "" : currencyInput;
+        if (!currency) {
+          alert("請確認幣種");
+          return;
+        }
+        if (isCreatedApp) {
+          alert("應用名已存在，無法創建應用，請再次確認");
+          return;
+        }
+        if (site === "dp") {
+          result = confirm(`
+              平台  :  ${moduleObj.label} - ${moduleObj.siteId}
+              推广码:  ${channelInput}
+              邮箱  :  ${emailInput}
+              ${isOpenS2s ? "打开S2S" : ""}
+              `);
+        } else {
+          result = confirm(`
+              平台  :  ${moduleObj.label} - ${moduleObj.siteId}
+              包名:  ${nameInput}
+              币种:  ${currencyInput}
+              邮箱  :  ${emailInput}
+               ${isOpenS2s ? "打开S2S" : ""}
+              `);
+        }
+
+        if (result) {
+          console.log("已確認");
+        } else {
+          console.log("已取消");
+          return;
+        }
+        const createBtnEl = document.getElementById("createBtn");
+        const spinnerEl = document.getElementById("spinner");
+        createBtnEl.disabled = true;
+        spinnerEl.style.display = "block";
+        const data = await fetchApi({
+          apiUrl: "https://api.adjust.com/dashboard/api/apps",
+          method: "POST",
+          body: JSON.stringify({
+            name: appObj.name,
+            reporting_currency: currency,
+            is_child_directed: false,
+            no_eea_users: false,
+          }),
+        });
+
+        if (data?.app_token) {
+          await getAppList();
+          await getOneUser();
+
+          if (userData.role === "custom") {
+            await updateUserRole(data?.app_token);
+          } else {
+            afterCreateApp(data?.app_token);
+          }
+        }
+      }
+
+      // 增加用戶
+      async function addUser(appToken) {
+        const accountId = localStorage.getItem("accountId");
+        const currentAppObject = appList.find((el) => el.name === name);
+        if (!!accountId) {
+          await fetchApi({
+            apiUrl: `https://api.adjust.com/accounts/accounts/${accountId}/users`,
+            method: "POST",
+            body: JSON.stringify({
+              account_id: accountId,
+              first_name: "User",
+              last_name: "Ad",
+              language: "zh",
+              email: emailInput,
+              agency_name: "",
+              role: "custom",
+              local_roles: {
+                features: [
+                  { name: "cost_data", role: "reader" },
+                  { name: "ad_revenue", role: "reader" },
+                  { name: "revenue_data", role: "reader" },
+                ],
+                mobile_apps: [
+                  {
+                    role: appToken ? appRole : "reader",
+                    token: appToken || defaultAppToken,
+                  },
+                ],
+              },
+            }),
+            callback: () => {
+              afterAuthUser("addUser");
+            },
+          });
+        } else {
+          alert("請詢問開發人員");
+        }
+      }
+
+      // 編輯用戶權限
+      async function updateUserRole(appToken) {
+        const accountId = localStorage.getItem("accountId");
+        if (!!accountId && !!userData.id) {
+          const isMobileAppsIncludeApptoken =
+            !!userData?.local_roles?.mobile_apps.find(
+              (el) => el.token === appToken
+            );
+          const role = modal === "create" ? "editor" : appRole;
+          const features = userData?.local_roles?.features
+            ? [...userData?.local_roles?.features]
+            : [
+                {
+                  name: "cost_data",
+                  role: "reader",
+                },
+                {
+                  name: "ad_revenue",
+                  role: "reader",
+                },
+                {
+                  name: "revenue_data",
+                  role: "reader",
+                },
+              ];
+          const mobile_apps = userData?.local_roles?.mobile_apps
+            ? isMobileAppsIncludeApptoken
+              ? userData?.local_roles?.mobile_apps.map((el) => {
+                  if (el.token === appToken) {
+                    return {
+                      ...el,
+                      role,
+                    };
+                  }
+                  return el;
+                })
+              : [
+                  ...userData?.local_roles?.mobile_apps,
+                  {
+                    role,
+                    token: appToken,
+                  },
+                ]
+            : [
+                {
+                  role,
+                  token: appToken,
+                },
+              ];
+
+          await fetchApi({
+            apiUrl: `https://api.adjust.com/accounts/accounts/${accountId}/users/${userData.id}/roles`,
+            method: "PUT",
+            body: JSON.stringify({
+              role: userData.role,
+              local_roles: {
+                features,
+                mobile_apps,
+              },
+              id: userData.id,
+            }),
+            callback: () => {
+              if (modal === "create") {
+                afterCreateApp(appToken);
+              } else {
+                afterAuthUser();
+              }
+            },
+          });
+        } else {
+          alert("請詢問開發人員");
+        }
+      }
+
+      // 取得用戶列表
+      async function getUsers() {
+        const accountId = localStorage.getItem("accountId");
+        if (accountId) {
+          const data = await fetchApi({
+            apiUrl: `https://api.adjust.com/accounts/accounts/${accountId}/users`,
+            method: "GET",
+          });
+
+          users = data || [];
+        }
+      }
+
+      //  取得用戶資訊
+      async function getOneUser() {
+        const accountId = localStorage.getItem("accountId");
+        if (!!accountId && !!userData?.id) {
+          const data = await fetchApi({
+            apiUrl: `https://api.adjust.com/accounts/accounts/${accountId}/users/${userData.id}`,
+            method: "GET",
+          });
+          userData = {
+            ...userData,
+            local_roles: data?.local_roles,
+          };
+        } else {
+          alert("請詢問開發人員");
+        }
+      }
+
+      // 取得應用列表
+      async function getAppList() {
+        const data = await fetchApi({
+          apiUrl: "https://api.adjust.com/dashboard/api/apps?ctv=false",
+          method: "GET",
+        });
+        appList = data.apps || [];
+      }
+
+      async function getCurrencies() {
+        const data = await fetchApi({
+          apiUrl: "https://api.adjust.com/dashboard/api/reporting_currencies",
+          method: "GET",
+        });
+        currencies = data.currencies || [];
+      }
+
+      // 取得當下s2sToken
+      async function getCurrentS2sToken(token) {
+        await fetchApi({
+          apiUrl: `https://api.adjust.com/dashboard/api/apps/${token}/s2s_security`,
+          method: "GET",
+          callback: (data) => {
+            currentS2sToken =
+              (data.tokens && data.tokens.length > 0 && data.tokens[0].token) ||
+              "";
+            if (!!currentS2sToken) {
+              const appNameTextEl = document.getElementById("appName");
+              appNameTextEl.textContent = `${appNameTextEl?.textContent}
+      s2s: ${currentS2sToken}`;
+            }
+          },
+        });
+      }
+
+      async function getInvitations() {
+        const accountId = localStorage.getItem("accountId");
+        return await fetchApi({
+          apiUrl: `https://api.adjust.com/accounts/accounts/${accountId}/users/invitations`,
+          method: "GET",
+          callback: (data) => {
+            return data;
+          },
+        });
+      }
+
+      async function logout() {
+        await fetchApi({
+          apiUrl: "https://api.adjust.com/accounts/users/sign_out",
+          method: "DELETE",
+        });
+      }
+
+      // 輸入郵箱
+      function onHandleInputEmail(e) {
+        // emailInput = e.target.value.trim();
+        // e.target.value = emailInput;
+        // checkEmail();
+      }
+
+      // 輸入推廣碼
+      function onHandleInputChannel(e) {
+        // channelInput = e.target.value.trim();
+        // e.target.value = channelInput;
+        // checkChannel();
+        // updateAppName();
+      }
+
+      // 輸入授權應用名
+      function onHandleInputAppNameAuth(e) {
+        // appNameAuthInput = e.target.value.trim();
+        // e.target.value = appNameAuthInput;
+        // checkAppNameAuth();
+      }
+
+      // 更新應用名
+      function updateAppName() {
+        let name = "";
+        if (site === "dp") {
+          name = `${moduleObj?.siteId}_${channelInput}`;
+        } else {
+          name = `${moduleObj?.siteId}_${nameInput}`;
+        }
+        document.getElementById("appName").textContent = name;
+        appObj = appList.find((el) => el.name === name) || { name: name };
+        if (!!appObj?.app_token) {
+          isCreatedApp = true;
+          const validTextEl = document.getElementById("appNameValidText");
+          if (modal === "create") {
+            getCurrentS2sToken(appObj?.app_token);
+            validTextEl.textContent =
+              "應用名已存在，請確認是否要做開通帳號/授權應用，如要做開通帳號/授權應用的話，請點擊右上角的＂切換到開通帳號/授權應用＂按鈕";
+            validTextEl.style.color = "red";
+          } else {
+            validTextEl.textContent = "";
+          }
+        } else if (!!channelInput) {
+          isCreatedApp = false;
+          const validTextEl = document.getElementById("appNameValidText");
+          if (modal === "auth") {
+            validTextEl.textContent =
+              "應用名不存在，請確認是否要做創建應用，如要做創建應用的話，請點擊右上角的＂切換到創建應用＂按鈕";
+            validTextEl.style.color = "red";
+          } else {
+            validTextEl.textContent = "";
+          }
+        } else {
+          isCreatedApp = false;
+          const validTextEl = document.getElementById("appNameValidText");
+          validTextEl.textContent = "";
+        }
+      }
+
+      // 複製文字
+      function copyText(text) {
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            alert(`${text} 已複製到剪貼簿！`);
+          })
+          .catch((err) => {
+            console.error("複製失敗:", err);
+          });
+      }
+
+      // 點擊複製
+      function onHandleCopy() {
+        const appNameTextEl = document.getElementById("appName");
+        if (!!currentS2sToken) {
+          copyText(`應用名: ${appNameTextEl?.textContent}`);
+        } else {
+          copyText(`應用名：${appNameTextEl.textContent}`);
+        }
+      }
+
+      // 送出前驗證
+      function check() {
+        let isCheck = false;
+        if (modal === "create") {
+          if (site === "dp") {
+            isCheck = checkChannel();
+          } else {
+            isCheck = checkName();
+            isCheck = checkCurrency() && isCheck;
+          }
+        } else {
+          isCheck = appNameAuthInput && checkAppNameAuth();
+          if (!!appNameAuthInput) {
+            isCheck = checkAppNameAuth();
+          } else {
+            isCheck = true;
+          }
+        }
+        isCheck = checkEmail() && isCheck;
+        return isCheck;
+      }
+
+      // 驗證推廣碼
+      function checkChannel() {
+        const channelEl = document.getElementById("channel");
+        if (!channelInput) {
+          channelEl.style.borderColor = "red";
+          return false;
+        } else {
+          channelEl.style.borderColor = "transparent";
+          return true;
+        }
+      }
+
+      // 驗證應用名
+      function checkAppName() {
+        const appNameEl = document.getElementById("appName");
+        if (!appNameInput) {
+          appNameEl.style.borderColor = "red";
+          return false;
+        } else {
+          appNameEl.style.borderColor = "transparent";
+          return true;
+        }
+      }
+
+      // 驗證包名
+      function checkName() {
+        const nameEl = document.getElementById("name");
+
+        if (!nameInput) {
+          nameEl.style.borderColor = "red";
+          return false;
+        } else {
+          nameEl.style.borderColor = "transparent";
+          return true;
+        }
+      }
+
+      // 驗證幣種
+      function checkCurrency() {
+        const currencyEl = document.getElementById("currency");
+        const validTextEl = document.getElementById("currencyValidText");
+
+        const currentCurrency = currencies?.find(
+          (el) => el.name === currencyInput
+        );
+
+        currencyData = currentCurrency;
+        if (!!currentCurrency) {
+          isCurrencylValid = true;
+          validTextEl.textContent = "幣種正確";
+          validTextEl.style.color = "darkGreen";
+          currencyEl.style.borderColor = "transparent";
+          return true;
+        } else {
+          isCurrencylValid = false;
+          currencyEl.style.borderColor = "red";
+          validTextEl.textContent = "幣種錯誤，請客戶確認下";
+          validTextEl.style.color = "red";
+          return false;
+        }
+      }
+
+      // 驗證郵箱
+      function checkEmail() {
+        const emailEl = document.getElementById("email");
+        const validTextEl = document.getElementById("emailValidText");
+
+        if (modal === "create") {
+          const currentUser = users?.find((el) => el.email === emailInput);
+          userData = currentUser;
+          if (!!currentUser) {
+            isEmailValid = true;
+            validTextEl.textContent = "郵箱存在";
+            validTextEl.style.color = "darkGreen";
+            emailEl.style.borderColor = "transparent";
+            return true;
+          } else {
+            isEmailValid = false;
+            emailEl.style.borderColor = "red";
+            if (!!emailInput) {
+              validTextEl.textContent = "郵箱不存在，請聯絡開發";
+              validTextEl.style.color = "red";
+            } else {
+              validTextEl.textContent = "";
+              validTextEl.style.color = "transparant";
+            }
+            return false;
+          }
+        } else {
+          if (!emailInput) {
+            validTextEl.textContent = "";
+            validTextEl.style.color = "red";
+            emailEl.style.borderColor = "red";
+            return false;
+          } else {
+            validTextEl.textContent = "";
+            validTextEl.style.color = "transparant";
+            emailEl.style.borderColor = "transparent";
+            return true;
+          }
+        }
+      }
+
+      // 驗證授權應用名
+      function checkAppNameAuth() {
+        const appNameAuthEl = document.getElementById("appNameAuth");
+        const validTextEl = document.getElementById("appNameAuthValidText");
+
+        appObj = appList?.find((el) => el.name === appNameAuthInput);
+
+        if (!!appObj?.app_token) {
+          isAppNameAuthValid = true;
+          validTextEl.textContent = "應用名已存在";
+          validTextEl.style.color = "darkGreen";
+          appNameAuthEl.style.borderColor = "transparent";
+          return true;
+        } else {
+          isAppNameAuthValid = false;
+          validTextEl.textContent = "應用名不存在，無法授權應用，請再次確認";
+          validTextEl.style.color = "red";
+          appNameAuthEl.style.borderColor = "red";
+          return false;
+        }
+      }
+
+      // 創建應用後操作
+      async function afterCreateApp(token) {
+        if (isOpenS2s) {
+          await fetchApi({
+            apiUrl: `https://api.adjust.com/dashboard/api/apps/${token}/authentication_tokens`,
+            method: "POST",
+            body: JSON.stringify({
+              authentication_token: {
+                label: "s2s",
+                scope: { ad_revenue: true, event: true, session: true },
+              },
+            }),
+            callback: (data) => {
+              onEndCreateApp(data.token);
+            },
+          });
+        } else {
+          onEndCreateApp();
+        }
+      }
+
+      function onEndCreateApp(s2sToken) {
+        const appNameTextEl = document.getElementById("appName");
+        const createBtnEl = document.getElementById("createBtn");
+        const spinnerEl = document.getElementById("spinner");
+        const validTextEl = document.getElementById("emailValidText");
+        createBtnEl.disabled = false;
+        spinnerEl.style.display = "none";
+        validTextEl.textContent = "";
+        initObj();
+        getAccount();
+        onHandleRemoveCreateTextarea();
+        onSyncSite(moduleList[0].siteId);
+        if (s2sToken) {
+          copyText(`應用名: ${appNameTextEl?.textContent}
+      s2s: ${s2sToken}`);
+          document.getElementById(
+            "appName"
+          ).textContent = `${appNameTextEl?.textContent}
+      s2s: ${s2sToken}`;
+        } else {
+          copyText(`應用名: ${appNameTextEl?.textContent}`);
+        }
+
+        alert("創建應用成功");
+        console.log("create app successfully!!");
+      }
+
+      // 黏貼創建應用文字串
+      function onHandleCreateTextarea(e) {
+        const textContentEl = document.getElementById("createTextContent");
+        if (!textContentEl.value.trim()) return;
+        textContentEl.disabled = true;
+        const content = e.data;
+        try {
+          const textArr = content?.split("\n");
+          textArr.length > 0 && onSync(textArr);
+        } catch (error) {}
+      }
+
+      // 黏貼開通帳號/授權應用文字串
+      function onHandleAuthTextarea(e) {
+        const textContentEl = document.getElementById("authTextContent");
+        if (!textContentEl.value.trim()) return;
+        textContentEl.disabled = true;
+        const content = e.data;
+        try {
+          const textArr = content?.split("\n");
+          textArr.length > 0 && onSync(textArr);
+        } catch (error) {}
+      }
+
+      // 文字串同步到輸入框
+      function onSync(textArr) {
+        for (let index = 0; index < textArr.length; index++) {
+          const element = textArr[index].split(/\s*[:：]\s*/);
+          if (modal === "create") {
+            if (element[0] === "平台") {
+              site = element[1] === "other" ? "other" : "dp";
+              // key 後續改成api後就可以改成用siteId(須跟客戶說要調整提供的內容 平台key改成平台id)
+              const currentSiteId = moduleList.find(
+                (e) => e.key === element[1]
+              )?.siteId;
+              onSyncSite(currentSiteId);
+            }
+
+            if (element[0] === "推广码" || element[0] === "推廣碼") {
+              onSyncChannel(element[1]);
+            }
+
+            if (
+              element[0] === "包名" ||
+              element[0] === "创建包名" ||
+              element[0] === "創建包名"
+            ) {
+              onSyncName(element[1]);
+            }
+
+            if (element[0] === "币种" || element[0] === "幣種") {
+              onSyncCurrency(element[1]);
+            }
+
+            if (/打开S2S|打开s2s|s2s|S2S|打開S2S|打開s2s/.test(element[0])) {
+              onHandleS2S();
+            }
+          }
+
+          if (modal === "auth") {
+            if (
+              element[0] === "应用名" ||
+              element[0] === "包名" ||
+              element[0] === "應用名"
+            ) {
+              onSyncAppNameAuth(element[1]);
+            }
+
+            if (
+              element[0] === "权限" ||
+              element[0] === "權限" ||
+              element[0] === "授权" ||
+              element[0] === "授權"
+            ) {
+              onSyncAppNameRole(element[1]);
+            }
+          }
+
+          if (element[0] === "邮箱" || element[0] === "郵箱") {
+            onSyncEmail(element[1]);
+          }
+        }
+
+        updateAppName();
+      }
+
+      function onSyncSite(siteId) {
+        const moduleRadiosContainer = document.getElementById("moduleRadios");
+        let index = 0;
+        moduleObj = moduleList.find((el, i) => {
+          index = i;
+          return el.siteId === siteId;
+        });
+
+        moduleRadiosContainer.childNodes.forEach((m, i) => {
+          if (i === index) {
+            m.firstChild.checked = true;
+          } else {
+            m.firstChild.checked = false;
+          }
+        });
+
+        if (site === "dp") {
+          const currencyEl = document.getElementById("currency");
+          const currencyInputEl = document.getElementById("currencyInput");
+          const currencyValidTextEl =
+            document.getElementById("currencyValidText");
+          const nameEl = document.getElementById("name");
+          const nameInputEl = document.getElementById("nameInput");
+          currencyEl.style.borderColor = "transparent";
+          currencyInputEl.value = "";
+          currencyInput = "";
+          currencyValidTextEl.textContent = "";
+          nameEl.style.border = "transparent";
+          nameInputEl.value = "";
+          nameInput = "";
+        } else {
+          const channelEl = document.getElementById("channel");
+          const channelInputEl = document.getElementById("channelInput");
+          const emailEl = document.getElementById("email");
+          const emailInputEl = document.getElementById("emailInput");
+          const validTextEl = document.getElementById("emailValidText");
+          channelEl.style.border = "transparent";
+          channelInputEl.value = "";
+          channelInput = "";
+          emailEl.style.borderColor = "transparent";
+          emailInputEl.value = "";
+          emailInput = "";
+          validTextEl.textContent = "";
+        }
+      }
+
+      function onSyncChannel(channel) {
+        const channelInputEl = document.getElementById("channelInput");
+        channelInput = channel.trim();
+        channelInputEl.value = channelInput;
+        checkChannel();
+      }
+
+      function onSyncEmail(email) {
+        const emailInputEl = document.getElementById("emailInput");
+        emailInput = email.trim();
+        emailInputEl.value = emailInput;
+        if (modal === "create") {
+          checkEmail();
+        } else {
+          const currentUser = users?.find((el) => el.email === emailInput);
+          userData = currentUser;
+          if (!appNameAuthInput) {
+            appRole = "reader";
+            onSyncAppNameRole("查看");
+          }
+          onHandleCheckAccount();
+        }
+      }
+
+      function onSyncName(name) {
+        const nameInputEl = document.getElementById("nameInput");
+        nameInput = name.trim();
+        nameInputEl.value = nameInput;
+        checkName();
+      }
+
+      function onSyncCurrency(currency) {
+        const currencyInputEl = document.getElementById("currencyInput");
+        currencyInput = currency.trim().toUpperCase();
+        currencyInputEl.value = currencyInput;
+        checkCurrency();
+      }
+
+      function onSyncAppNameAuth(appName) {
+        const appNameAuthInputEl = document.getElementById("appNameAuthInput");
+        appNameAuthInput = appName.trim();
+        appNameAuthInputEl.value = appNameAuthInput;
+        checkAppNameAuth();
+      }
+
+      function onSyncAppNameRole(role) {
+        const authRadios = document.querySelectorAll('input[name="auth"]');
+        const currentRole = role === "编辑" ? "editor" : "reader";
+        authRadios.forEach((radio) => {
+          if (radio.value === currentRole) {
+            radio.checked = true;
+            appRole = currentRole;
+          } else {
+            radio.checked = false;
+          }
+        });
+      }
+
+      function onHandleS2S() {
+        const openS2SCheckboxEl = document.getElementById("openS2SCheckbox");
+        openS2SCheckboxEl.checked = true;
+        isOpenS2s = true;
+      }
+
+      function onHandleRemoveCreateTextarea() {
+        const textContentEl = document.getElementById("createTextContent");
+        const channelInputEl = document.getElementById("channelInput");
+        const emailEl = document.getElementById("email");
+        const emailInputEl = document.getElementById("emailInput");
+        const validTextEl = document.getElementById("emailValidText");
+        const currencyEl = document.getElementById("currency");
+        const currencyInputEl = document.getElementById("currencyInput");
+        const currencyValidTextEl =
+          document.getElementById("currencyValidText");
+        const nameInputEl = document.getElementById("nameInput");
+        const openS2SCheckboxEl = document.getElementById("openS2SCheckbox");
+
+        textContentEl.value = "";
+        textContentEl.disabled = false;
+        channelInputEl.value = "";
+        channelInput = "";
+        emailEl.style.borderColor = "transparent";
+        emailInputEl.value = "";
+        emailInput = "";
+        validTextEl.textContent = "";
+        currencyEl.style.borderColor = "transparent";
+        currencyInputEl.value = "";
+        currencyInput = "";
+        currencyValidTextEl.textContent = "";
+        nameInputEl.value = "";
+        nameInput = "";
+        openS2SCheckboxEl.checked = false;
+        isOpenS2s = false;
+      }
+
+      function onHandleRemoveAuthTextarea() {
+        const appNameAuthEl = document.getElementById("appNameAuth");
+        const textContentEl = document.getElementById("authTextContent");
+        const appNameAuthInputEl = document.getElementById("appNameAuthInput");
+        const appNameAuthValidTextEl = document.getElementById(
+          "appNameAuthValidText"
+        );
+        const emailEl = document.getElementById("email");
+        const emailInputEl = document.getElementById("emailInput");
+        const validTextEl = document.getElementById("emailValidText");
+        appNameAuthEl.style.borderColor = "transparent";
+        textContentEl.value = "";
+        textContentEl.disabled = false;
+        appNameAuthInputEl.value = "";
+        appNameAuthInput = "";
+        appNameAuthValidTextEl.textContent = "";
+        emailEl.style.borderColor = "transparent";
+        emailInputEl.value = "";
+        emailInput = "";
+        validTextEl.textContent = "";
+        currentS2sToken = "";
+        appRole = "editor";
+        onSyncAppNameRole("编辑");
+      }
+
+      function onHandleSwitchToAuth() {
+        modal = "auth";
+        const titleEl = document.getElementById("title");
+        const createBtnEl = document.getElementById("createBtn");
+        const authBtnEl = document.getElementById("authBtn");
+        const switchToAuthBtnEl = document.getElementById("switchToAuthBtn");
+        const switchToCreateBtnEl =
+          document.getElementById("switchToCreateBtn");
+        const createPanelEl = document.getElementById("createPanel");
+        const authPanelEl = document.getElementById("authPanel");
+        const createTextareaEl = document.getElementById("createTextarea");
+        const authTextareaEl = document.getElementById("authTextarea");
+        const createAppNameEl = document.getElementById("createAppName");
+        const openS2SEl = document.getElementById("openS2S");
+        const checkAccountBtn = document.getElementById("checkAccountBtn");
+        titleEl.textContent = "Adjust開通帳號/授權應用";
+        createBtnEl.style.display = "none";
+        authBtnEl.style.display = "block";
+        switchToAuthBtnEl.style.display = "none";
+        switchToCreateBtnEl.style.display = "block";
+        createPanelEl.style.display = "none";
+        authPanelEl.style.display = "block";
+        createTextareaEl.style.display = "none";
+        authTextareaEl.style.display = "block";
+        createAppNameEl.style.display = "none";
+        openS2SEl.style.display = "none";
+        checkAccountBtn.style.display = "block";
+        onHandleRemoveCreateTextarea();
+        updateAppName();
+      }
+
+      function onHandleSwitchToCreate() {
+        modal = "create";
+        const titleEl = document.getElementById("title");
+        const createBtnEl = document.getElementById("createBtn");
+        const authBtnEl = document.getElementById("authBtn");
+        const switchToAuthBtnEl = document.getElementById("switchToAuthBtn");
+        const switchToCreateBtnEl =
+          document.getElementById("switchToCreateBtn");
+        const createPanelEl = document.getElementById("createPanel");
+        const authPanelEl = document.getElementById("authPanel");
+        const createTextareaEl = document.getElementById("createTextarea");
+        const authTextareaEl = document.getElementById("authTextarea");
+        const createAppNameEl = document.getElementById("createAppName");
+        const openS2SEl = document.getElementById("openS2S");
+        const checkAccountBtn = document.getElementById("checkAccountBtn");
+        titleEl.textContent = "Adjust創建應用";
+        createBtnEl.style.display = "block";
+        authBtnEl.style.display = "none";
+        switchToAuthBtnEl.style.display = "block";
+        switchToCreateBtnEl.style.display = "none";
+        createPanelEl.style.display = "block";
+        authPanelEl.style.display = "none";
+        createTextareaEl.style.display = "block";
+        authTextareaEl.style.display = "none";
+        createAppNameEl.style.display = "block";
+        openS2SEl.style.display = "block";
+        checkAccountBtn.style.display = "none";
+        onHandleRemoveAuthTextarea();
+        updateAppName();
+      }
+
+      async function onHandleCheckAccount() {
+        if (!!userData) {
+          alert("此郵箱已開通帳號，可以授權");
+        }
+        if (!userData || !userData?.id) {
+          const res = await getInvitations();
+          const currentAccountInvited = res
+            .filter((el) => el.status === "active")
+            .find((el) => el.user.email === emailInput);
+          if (!!currentAccountInvited) {
+            alert("此郵箱已邀請尚未註冊，先請客戶完成註冊在進行授權");
+          }
+        }
+      }
+
+      async function authUserApp() {
+        const isCheck = check();
+        if (!isCheck) return;
+        if (appNameAuthInput && !isAppNameAuthValid) {
+          alert("應用名不存在，無法授權應用，請再次確認");
+          return;
+        }
+        if (!!userData && !appNameAuthInput) {
+          alert("請提供應用名");
+          return;
+        }
+        if (!emailInput) {
+          alert("請提供邮箱");
+          return;
+        }
+        const result = confirm(`
+              应用名:  ${appNameAuthInput || "預設包名"}
+              权限  :  ${appRole === "editor" ? "编辑" : "查看"}
+              邮箱  :  ${emailInput}
+              `);
+
+        if (result) {
+          console.log("已確認");
+        } else {
+          console.log("已取消");
+          return;
+        }
+
+        const authBtnEl = document.getElementById("authBtn");
+        const spinnerEl = document.getElementById("spinner");
+        authBtnEl.disabled = true;
+        spinnerEl.style.display = "block";
+
+        if (!!userData && !!appObj?.app_token) {
+          await getAppList();
+          await getOneUser();
+
+          if (userData.role === "custom") {
+            await updateUserRole(appObj.app_token);
+          } else {
+            afterAuthUser();
+          }
+        }
+
+        if (!userData) {
+          addUser(appObj?.app_token);
+        }
+      }
+
+      function afterAuthUser(role) {
+        const appNameTextEl = document.getElementById("appName");
+        const authBtnEl = document.getElementById("authBtn");
+        const spinnerEl = document.getElementById("spinner");
+        const validTextEl = document.getElementById("emailValidText");
+        authBtnEl.disabled = false;
+        spinnerEl.style.display = "none";
+        validTextEl.textContent = "";
+        if (role === "addUser" && !appNameAuthInput) {
+          alert("已開通帳號");
+        } else {
+          alert("授權應用成功");
+        }
+        initObj();
+        getAccount();
+        onHandleRemoveAuthTextarea();
+        onSyncSite(moduleList[0].siteId);
+        onHandleSwitchToCreate();
+        console.log("authorize user successfully!!");
+      }
+    </script>
+  </body>
+</html>
