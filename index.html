@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Adjust創建應用</title>
+    <!-- <link rel="stylesheet" href="style.css" /> -->
   </head>
   <style>
     .fullscreen {
@@ -164,7 +165,8 @@
       padding: 10px 20px;
     }
 
-    .check_account_btn {
+    .check_account_btn,
+    .bind_s2s_btn {
       display: none;
     }
 
@@ -322,6 +324,14 @@
       border: solid white;
       border-width: 0 2px 2px 0;
       transform: rotate(45deg);
+    }
+
+    .version_text {
+      display: flex;
+      justify-content: flex-end;
+      color: rgba(10, 123, 15, 0.8);
+      font-size: 12px;
+      margin-top: 4px;
     }
   </style>
   <body class="flex-col flex-center fullscreen">
@@ -502,9 +512,16 @@
               郵箱狀態
             </button>
           </div>
-          <div id="openS2S" class="custom-checkbox">
+          <div id="openS2S" class="flex-center custom-checkbox">
             <input type="checkbox" id="openS2SCheckbox" disabled /><span></span
             >打开S2S
+            <button
+              id="bindS2sBtn"
+              class="bind_s2s_btn ml-4 pointer"
+              onclick="onHandleBindS2s()"
+            >
+              綁定
+            </button>
           </div>
         </div>
       </div>
@@ -526,6 +543,7 @@
         <button id="authBtn" class="auth_btn pointer">開通帳號/授權應用</button>
         <div id="spinner" class="spinner spinner_location none"></div>
       </div>
+      <span class="version_text">版本2025.9.8-1</span>
 
       <!-- <button id="logoutBtn">登出</button> -->
 
@@ -872,6 +890,13 @@
             callback: () => {
               afterAuthUser("addUser");
             },
+            errorCallback: () => {
+              alert("新增用戶失敗，請與客戶確認郵箱是否正確，或詢問開發人員");
+              const authBtnEl = document.getElementById("authBtn");
+              const spinnerEl = document.getElementById("spinner");
+              authBtnEl.disabled = false;
+              spinnerEl.style.display = "none";
+            },
           });
         } else {
           alert("請詢問開發人員");
@@ -1012,7 +1037,31 @@
               const appNameTextEl = document.getElementById("appName");
               appNameTextEl.textContent = `${appNameTextEl?.textContent}
       s2s: ${currentS2sToken}`;
+            } else {
+              if (isOpenS2s) {
+                const bindS2sBtnEl = document.getElementById("bindS2sBtn");
+                bindS2sBtnEl.style.display = "inline-block";
+              }
             }
+          },
+        });
+      }
+
+      async function onHandleBindS2s(token) {
+        if (!isOpenS2s) return;
+        await fetchApi({
+          apiUrl: `https://api.adjust.com/dashboard/api/apps/${appObj.app_token}/authentication_tokens`,
+          method: "POST",
+          body: JSON.stringify({
+            authentication_token: {
+              label: "s2s",
+              scope: { ad_revenue: true, event: true, session: true },
+            },
+          }),
+          callback: (data) => {
+            updateAppName();
+            const bindS2sBtnEl = document.getElementById("bindS2sBtn");
+            bindS2sBtnEl.style.display = "none";
           },
         });
       }
@@ -1453,7 +1502,7 @@
 
       function onSyncEmail(email) {
         const emailInputEl = document.getElementById("emailInput");
-        emailInput = email.trim();
+        emailInput = email.trim().toLowerCase(); // 郵箱不分大小寫, 同adjust後台統一小寫
         emailInputEl.value = emailInput;
         if (modal === "create") {
           checkEmail();
@@ -1520,6 +1569,7 @@
           document.getElementById("currencyValidText");
         const nameInputEl = document.getElementById("nameInput");
         const openS2SCheckboxEl = document.getElementById("openS2SCheckbox");
+        const bindS2sBtnEl = document.getElementById("bindS2sBtn");
 
         textContentEl.value = "";
         textContentEl.disabled = false;
@@ -1537,6 +1587,7 @@
         nameInput = "";
         openS2SCheckboxEl.checked = false;
         isOpenS2s = false;
+        bindS2sBtnEl.style.display = "none";
       }
 
       function onHandleRemoveAuthTextarea() {
