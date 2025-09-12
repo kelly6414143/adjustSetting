@@ -880,11 +880,6 @@
                   token: app.token,
                 }));
 
-          console.log(
-            "-----------addUserByMultiApps-------mobile_apps",
-            mobile_apps
-          );
-
           await fetchApi({
             apiUrl: `https://api.adjust.com/accounts/accounts/${accountId}/users`,
             method: "POST",
@@ -1065,12 +1060,6 @@
                 token: app.token,
               }));
 
-          console.log(
-            "----updateUserRoleByMultiApps-----features----mobile_apps",
-            features,
-            mobile_apps
-          );
-
           await fetchApi({
             apiUrl: `https://api.adjust.com/accounts/accounts/${accountId}/users/${userData.id}/roles`,
             method: "PUT",
@@ -1206,7 +1195,6 @@
         } else {
           name = `${moduleObj?.siteId}_${nameInput}`;
         }
-        console.log("--------------------------updateAppName", appList, name);
         document.getElementById("appName").textContent = name;
         appObj = appList.find((el) => el.name === name) || { name: name };
         if (!!appObj?.app_token) {
@@ -1380,6 +1368,7 @@
         }
       }
 
+      // 取得授權應用名列表的應用物件列表
       function getAppObjList() {
         appObjList = [];
         appNameAuthList.forEach((appName) => {
@@ -1818,8 +1807,6 @@
       }
 
       async function authUserApp() {
-        console.log("-------------------------authUserApp", appNameAuthList);
-        console.log("-----------------------authUserApp-----appRole", appRole);
         const isCheck = check();
         // 用於提示用的
         if (!isAppNameAuthListValid) {
