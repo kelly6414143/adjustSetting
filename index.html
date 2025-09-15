@@ -1,12 +1,19 @@
 <!--
 Adjust創建應用與開通帳號/授權應用extension
+
+前情提要：提供給技術支持使用，技術支持會將客戶提供的訊息貼到對應的文字框中，貼上後會自動帶入右側的表單，確認無誤後點擊按鈕即可
+
 主要功能使用說明：
 1. 創建應用：請在左側的文字框內貼上應用資訊，格式請參考 placeholder 的範例，貼上後會自動帶入右側的表單，確認無誤後點擊「創建應用」按鈕即可
+  ．平台區分單站/其他，單站會自動帶入預設幣種，其他則需要手動輸入幣種 (其他: 這邊是指通訊軟體teams裡adjust br 應用創建-支持群)
+  ．單站需要提供平台、推廣碼與郵箱
+  ．其他需要提供平台、包名、幣種與郵箱
 2. 開通帳號/授權應用：請在左側的文字框內貼上應用資訊，格式請參考 placeholder 的範例，貼上後會自動帶入右側的表單，確認無誤後點擊「開通帳號/授權應用」按鈕即可
+  ．提供給自定義權限用戶為主，不提供給其他權限用戶
   ．開通帳號時沒有提供應用名時，會自動賦予預設應用名(為DEFAULT_APP_TOKEN)
   ．支援同時授權多個應用給同一個用戶
   ．權限支援「編輯」與「查看」
-  ．授權應用的用戶，如果已註冊Adjust帳號但未開通的話，會無法成功授權
+  ．授權應用的用戶，如果已創建Adjust帳號但未開通(註冊)的話，會無法成功授權
 3. 切換功能：點擊「切換到開通帳號/授權應用」或「切換到創建應用」按鈕即可切換功能
 4. 檢查郵箱狀態：點擊「郵箱狀態」按鈕即可檢查該郵箱是否已經有註冊Adjust帳號
 5. 複製應用名：點擊「複製」按鈕即可複製應用名到剪貼簿
@@ -684,8 +691,8 @@ Adjust創建應用與開通帳號/授權應用extension
       ); // 授權應用名驗證文字
       const appNameAuthInputElement =
         document.getElementById("appNameAuthInput"); // 授權應用名輸入框
-      const createContentEl = document.getElementById("createContent"); // 黏貼創建應用文字串輸入框
-      const authContentEl = document.getElementById("authContent"); // 黏貼開通帳號/授權應用文字串輸入框
+      const createTextContentEl = document.getElementById("createTextContent"); // 黏貼創建應用文字串輸入框
+      const authTextContentEl = document.getElementById("authTextContent"); // 黏貼開通帳號/授權應用文字串輸入框
       const openS2SCheckboxEl = document.getElementById("openS2SCheckbox"); // S2S 開關
       const bindS2sBtnEl = document.getElementById("bindS2sBtn"); // 綁定 S2S 按鈕
 
@@ -787,7 +794,7 @@ Adjust創建應用與開通帳號/授權應用extension
       // 錯誤處理
       function handleError(error, userMessage) {
         alert(userMessage);
-        console.error(error);
+        !!error && console.error(error);
         spinnerEl.style.display = "none";
       }
 
@@ -1426,8 +1433,8 @@ Adjust創建應用與開通帳號/授權應用extension
 
       // 黏貼創建應用文字串
       function onHandleCreateTextarea(e) {
-        if (!createContentEl.value.trim()) return;
-        createContentEl.disabled = true;
+        if (!createTextContentEl.value.trim()) return;
+        createTextContentEl.disabled = true;
         const content = e.data;
         try {
           const textArr = content?.split("\n");
@@ -1437,8 +1444,8 @@ Adjust創建應用與開通帳號/授權應用extension
 
       // 黏貼開通帳號/授權應用文字串
       function onHandleAuthTextarea(e) {
-        if (!authContentEl.value.trim()) return;
-        authContentEl.disabled = true;
+        if (!authTextContentEl.value.trim()) return;
+        authTextContentEl.disabled = true;
         const content = e.data;
         try {
           const textArr = content?.split("\n");
@@ -1573,8 +1580,15 @@ Adjust創建應用與開通帳號/授權應用extension
 
       // 檢查郵箱狀態
       async function onHandleCheckAccount() {
-        if (!!userData) {
+        if (!!userData && userData?.role === "custom") {
           alert("此郵箱已開通帳號，可以授權");
+        }
+        if (!!userData && userData?.role !== "custom") {
+          // 非自定義角色
+          handleError(
+            null,
+            "此用戶為非自定義角色，無法自定義授權，請詢問開發人員"
+          );
         }
         if (!userData || !userData?.id) {
           const res = await getInvitations();
@@ -1644,8 +1658,8 @@ Adjust創建應用與開通帳號/授權應用extension
       // 移除創建應用文字串
       function onHandleRemoveCreateTextarea() {
         onClearContent();
-        createContentEl.value = "";
-        createContentEl.disabled = false;
+        createTextContentEl.value = "";
+        createTextContentEl.disabled = false;
         channelInputElement.value = "";
         channelValue = "";
         currencyContainerEl.style.borderColor = "transparent";
@@ -1663,8 +1677,8 @@ Adjust創建應用與開通帳號/授權應用extension
       function onHandleRemoveAuthTextarea() {
         onClearContent();
         appNameAuthContainerEl.style.borderColor = "transparent";
-        authContentEl.value = "";
-        authContentEl.disabled = false;
+        authTextContentEl.value = "";
+        authTextContentEl.disabled = false;
         appNameAuthValidTextEl.textContent = "";
         currentS2sToken = "";
         appRole = ROLE_EDITOR;
@@ -1731,7 +1745,10 @@ Adjust創建應用與開通帳號/授權應用extension
 
         if (!!userData && userData.role !== "custom") {
           // 非自定義角色
-          handleError(null, "此用戶為非自定義角色，請詢問開發人員");
+          handleError(
+            null,
+            "此用戶為非自定義角色，無法自定義授權，請詢問開發人員"
+          );
           return;
         }
 
