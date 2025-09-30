@@ -637,8 +637,6 @@ Adjust創建應用與開通帳號/授權應用extension
 
       // ===== 全域變數 =====
       let users = []; // 用戶列表
-      let isEmailValid = false; // 郵箱是否有效
-      let isCurrencyValid = false; // 幣種是否有效
       let moduleObj = ""; // 目前選擇的站點/市場物件
       let channelValue = ""; // 推廣碼
       let emailInput = ""; // 郵箱
@@ -710,8 +708,6 @@ Adjust創建應用與開通帳號/授權應用extension
       }
 
       function initObj() {
-        isEmailValid = false;
-        isCurrencyValid = false;
         moduleObj = "";
         channelValue = "";
         emailInput = "";
@@ -1295,13 +1291,11 @@ Adjust創建應用與開通帳號/授權應用extension
 
         currencyData = currentCurrency;
         if (!!currentCurrency) {
-          isCurrencyValid = true;
           currencyValidTextEl.textContent = "幣種正確";
           currencyValidTextEl.style.color = "darkGreen";
           currencyContainerEl.style.borderColor = "transparent";
           return true;
         } else {
-          isCurrencyValid = false;
           currencyContainerEl.style.borderColor = "red";
           currencyValidTextEl.textContent = "幣種錯誤，請客戶確認下";
           currencyValidTextEl.style.color = "red";
@@ -1315,13 +1309,11 @@ Adjust創建應用與開通帳號/授權應用extension
           const currentUser = users?.find((el) => el.email === emailInput);
           userData = currentUser;
           if (!!currentUser) {
-            isEmailValid = true;
             emailValidTextEl.textContent = "郵箱存在";
             emailValidTextEl.style.color = "darkGreen";
             emailContainerEl.style.borderColor = "transparent";
             return true;
           } else {
-            isEmailValid = false;
             emailContainerEl.style.borderColor = "red";
             if (!!emailInput) {
               emailValidTextEl.textContent = "郵箱不存在，請聯絡開發";
