@@ -1460,7 +1460,7 @@ Adjust創建應用與開通帳號/授權應用extension
               site = element[1] === "other" ? "other" : "dp";
               // key 後續改成api後就可以改成用siteId(須跟客戶說要調整提供的內容 平台key改成平台id)
               const currentSiteId = MODULE_LIST.find(
-                (e) => e.key === element[1]
+                (e) => e.key === element[1].toLowerCase().trim()
               )?.siteId;
               onSyncSite(currentSiteId);
             }
