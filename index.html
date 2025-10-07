@@ -1135,7 +1135,10 @@ Adjust創建應用與開通帳號/授權應用extension
           method: "GET",
           callback: (data) => {
             currentS2sToken =
-              (data.tokens && data.tokens.length > 0 && data.tokens[0].token) ||
+              (data.tokens &&
+                data.tokens.length > 0 &&
+                data.tokens[0].active &&
+                data.tokens[0].token) ||
               "";
             if (!!currentS2sToken) {
               appNameTextEl.textContent = `${appNameTextEl?.textContent}
