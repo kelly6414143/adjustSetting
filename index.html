@@ -1325,7 +1325,8 @@ Adjust創建應用與開通帳號/授權應用extension
           } else {
             emailContainerEl.style.borderColor = "red";
             if (!!emailInput) {
-              emailValidTextEl.textContent = "郵箱不存在，請聯絡開發";
+              emailValidTextEl.textContent =
+                "郵箱不存在，請與客戶確認郵箱是否正確";
               emailValidTextEl.style.color = "red";
             } else {
               emailValidTextEl.textContent = "";
@@ -1465,6 +1466,13 @@ Adjust創建應用與開通帳號/授權應用extension
               const currentSiteId = MODULE_LIST.find(
                 (e) => e.key === element[1].toLowerCase().trim()
               )?.siteId;
+              if (!currentSiteId) {
+                alert(
+                  `當前沒有 ${element[1]
+                    .toLowerCase()
+                    .trim()} 平台名稱，請參考Adjust 平台名稱對應表`
+                );
+              }
               onSyncSite(currentSiteId);
             }
 
