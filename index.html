@@ -25,7 +25,7 @@ Adjust創建應用與開通帳號/授權應用extension
 3. 此專案內的 localStorage 會存放 accountId 和 authToken，請勿更改
 4. 此專案內的所有文字皆可自行修改，但請勿更改任何程式碼
 -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
@@ -159,6 +159,7 @@ Adjust創建應用與開通帳號/授權應用extension
       0% {
         transform: rotate(0deg);
       }
+
       100% {
         transform: rotate(360deg);
       }
@@ -362,6 +363,7 @@ Adjust創建應用與開通帳號/授權應用extension
       margin-top: 4px;
     }
   </style>
+
   <body class="flex-col flex-center fullscreen">
     <div class="wrapper">
       <div class="switch switch_position flex-center">
@@ -571,7 +573,7 @@ Adjust創建應用與開通帳號/授權應用extension
         <button id="authBtn" class="auth_btn pointer">開通帳號/授權應用</button>
         <div id="spinner" class="spinner spinner_location none"></div>
       </div>
-      <span class="version_text">版本2025.10.8</span>
+      <span class="version_text">版本2026.04.20</span>
 
       <!-- <button id="logoutBtn">登出</button> -->
 
@@ -626,13 +628,26 @@ Adjust創建應用與開通帳號/授權應用extension
           key: "idx777",
         },
         {
+          label: "PHPGO菲律賓單站",
+          siteId: "631013",
+          currency: "PHP",
+          key: "PHPGO",
+        },
+        {
+          label: "NPT777緬甸單站",
+          siteId: "951015",
+          currency: "MMK",
+          key: "NPT777",
+        },
+        {
           label: "其他", // 其他站點
           siteId: "br",
           key: "other",
         },
       ];
-      const adjustAccountPrefixUrl = "https://api.adjust.com/accounts/"; // Adjust account API 前綴
-      const adjustDashboardPrefixUrl = "https://api.adjust.com/dashboard/"; // Adjust dashboard API 前綴
+      const apiProxyOrigin = "http://localhost:8787"; // 本機 proxy 入口
+      const adjustAccountPrefixUrl = `${apiProxyOrigin}/accounts/`; // Adjust account API 前綴(經過 proxy)
+      const adjustDashboardPrefixUrl = `${apiProxyOrigin}/dashboard/`; // Adjust dashboard API 前綴(經過 proxy)
 
       // ===== 狀態常數 =====
       const MODAL_CREATE = "create";
@@ -691,7 +706,7 @@ Adjust創建應用與開通帳號/授權應用extension
       const emailValidTextEl = document.getElementById("emailValidText"); // 郵箱驗證文字
       const appNameAuthContainerEl = document.getElementById("appNameAuth"); // 授權應用名輸入框容器
       const appNameAuthValidTextEl = document.getElementById(
-        "appNameAuthValidText"
+        "appNameAuthValidText",
       ); // 授權應用名驗證文字
       const appNameAuthInputElement =
         document.getElementById("appNameAuthInput"); // 授權應用名輸入框
@@ -758,7 +773,7 @@ Adjust創建應用與開通帳號/授權應用extension
         }
 
         const authelected = document.querySelector(
-          'input[name="auth"]:checked'
+          'input[name="auth"]:checked',
         );
         if (authelected) {
           appRole = authelected.value;
@@ -769,7 +784,7 @@ Adjust創建應用與開通帳號/授權應用extension
           radio.addEventListener("change", (event) => {
             if (event.target.checked) {
               moduleObj = MODULE_LIST.find(
-                (el) => el.siteId === event.target.value
+                (el) => el.siteId === event.target.value,
               );
               updateAppName();
             }
@@ -780,7 +795,7 @@ Adjust創建應用與開通帳號/授權應用extension
         authRadios.forEach((radio) => {
           radio.addEventListener("change", () => {
             const authelected = document.querySelector(
-              'input[name="auth"]:checked'
+              'input[name="auth"]:checked',
             ).value;
             appRole = authelected;
           });
@@ -804,7 +819,7 @@ Adjust創建應用與開通帳號/授權應用extension
       async function fetchApi({
         apiUrl,
         method,
-        headers = {},
+        headers,
         body,
         callback,
         errorCallback,
@@ -814,10 +829,10 @@ Adjust創建應用與開通帳號/授權應用extension
           const response = await fetch(apiUrl, {
             method,
             headers: {
-              "Content-Type": "application/json",
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-              ...headers,
-            },
+                  "Content-Type": "application/json",
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                  ...headers,
+                },
             body,
           });
 
@@ -968,9 +983,20 @@ Adjust創建應用與開通帳號/授權應用extension
                   token: app.token,
                 }));
 
+          const data = await fetchApi({
+            apiUrl: `${adjustAccountPrefixUrl}csrf`,
+            method: "GET",
+          });
+
+          const csrf_token = data?.csrf_token;
+
           await fetchApi({
             apiUrl: `${adjustAccountPrefixUrl}accounts/${accountId}/users`,
             method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-csrf-token": csrf_token,
+            },
             body: JSON.stringify({
               account_id: accountId,
               first_name: "User",
@@ -994,7 +1020,7 @@ Adjust創建應用與開通帳號/授權應用extension
             errorCallback: () => {
               handleError(
                 null,
-                "新增用戶失敗，請與客戶確認郵箱是否正確，或詢問開發人員"
+                "新增用戶失敗，請與客戶確認郵箱是否正確，或詢問開發人員",
               );
               authBtnEl.disabled = false;
               spinnerEl.style.display = "none";
@@ -1012,7 +1038,7 @@ Adjust創建應用與開通帳號/授權應用extension
           // 檢查用戶是否已包含該應用
           const isMobileAppsIncludeApptoken =
             !!userData?.local_roles?.mobile_apps.find(
-              (el) => el.token === appToken
+              (el) => el.token === appToken,
             );
           const role = modal === MODAL_CREATE ? ROLE_EDITOR : appRole;
           const features = userData?.local_roles?.features
@@ -1270,17 +1296,6 @@ Adjust創建應用與開通帳號/授權應用extension
         }
       }
 
-      // 驗證應用名
-      function checkAppName() {
-        if (!appNameInput) {
-          appNameTextEl.style.borderColor = "red";
-          return false;
-        } else {
-          appNameTextEl.style.borderColor = "transparent";
-          return true;
-        }
-      }
-
       // 驗證包名/應用名
       function checkName() {
         if (!nameInput) {
@@ -1295,7 +1310,7 @@ Adjust創建應用與開通帳號/授權應用extension
       // 驗證幣種
       function checkCurrency() {
         const currentCurrency = currencies?.find(
-          (el) => el.name === currencyInput
+          (el) => el.name === currencyInput,
         );
 
         currencyData = currentCurrency;
@@ -1458,50 +1473,61 @@ Adjust創建應用與開通帳號/授權應用extension
       // 文字串同步到輸入框
       function onSync(textArr) {
         for (let index = 0; index < textArr.length; index++) {
-          const element = textArr[index].split(/\s*[:：]\s*/);
+          const line = textArr[index] || "";
+          const separatorIndex = line.search(/[:：]/);
+          if (separatorIndex === -1) continue;
+
+          const rawKey = line.slice(0, separatorIndex).trim();
+          const rawValue = line.slice(separatorIndex + 1).trim();
+          if (!rawKey) continue;
+
+          const normalizedKey = rawKey.replace(/[\s\u3000]+/g, "").toLowerCase();
+          const normalizedValue = rawValue
+            .replace(/[\s\u3000]+/g, "")
+            .toLowerCase();
           if (modal === MODAL_CREATE) {
-            if (element[0] === "平台") {
-              site = element[1] === "other" ? "other" : "dp";
+            if (normalizedKey === "平台") {
+              site = normalizedValue === "other" ? "other" : "dp";
               // key 後續改成api後就可以改成用siteId(須跟客戶說要調整提供的內容 平台key改成平台id)
               const currentSiteId = MODULE_LIST.find(
-                (e) => e.key === element[1].toLowerCase().trim()
+                (e) => e.key.toLowerCase().trim() === normalizedValue,
               )?.siteId;
               if (!currentSiteId) {
                 alert(
-                  `當前沒有 ${element[1]
+                  `當前沒有 ${rawValue
                     .toLowerCase()
-                    .trim()} 平台名稱，請參考Adjust 平台名稱對應表`
+                    .trim()} 平台名稱，請參考Adjust 平台名稱對應表`,
                 );
               }
               onSyncSite(currentSiteId);
             }
 
-            if (element[0] === "推广码" || element[0] === "推廣碼") {
-              const channel = element[1];
+            if (normalizedKey === "推广码" || normalizedKey === "推廣碼") {
+              const channel = rawValue;
               channelValue = channel.trim();
               channelInputElement.value = channelValue;
               checkChannel();
             }
 
             if (
-              element[0] === "包名" ||
-              element[0] === "创建包名" ||
-              element[0] === "創建包名"
+              normalizedKey === "包名" ||
+              normalizedKey === "创建包名" ||
+              normalizedKey === "創建包名"
             ) {
-              const name = element[1];
+              const name = rawValue;
               nameInput = name.trim();
               nameInputElement.value = nameInput;
               checkName();
             }
 
-            if (element[0] === "币种" || element[0] === "幣種") {
-              const currency = element[1];
+            if (normalizedKey === "币种" || normalizedKey === "幣種") {
+              const currency = rawValue;
               currencyInput = currency.trim().toUpperCase();
               currencyInputElement.value = currencyInput;
               checkCurrency();
             }
 
-            if (/打开S2S|打开s2s|s2s|S2S|打開S2S|打開s2s/.test(element[0])) {
+            if (/(打开s2s|打開s2s|s2s)/i.test(normalizedKey)) {
               // 同步打開S2S
               openS2SCheckboxEl.checked = true;
               isOpenS2s = true;
@@ -1510,19 +1536,19 @@ Adjust創建應用與開通帳號/授權應用extension
 
           if (modal === MODAL_AUTH) {
             if (
-              element[0] === "应用名" ||
-              element[0] === "包名" ||
-              element[0] === "應用名"
+              normalizedKey === "应用名" ||
+              normalizedKey === "包名" ||
+              normalizedKey === "應用名"
             ) {
               // 匯集所有應用名
-              if (element[1]) {
-                const currentEl = element[1].trim();
+              if (rawValue) {
+                const currentEl = rawValue.trim();
                 if (appNameAuthList.includes(currentEl)) {
                   appNameAuthList = [];
                   isAppNameAuthListRepeat = true;
                   handleError(
                     null,
-                    `應用名 ${currentEl} 重複，請確認後重新黏貼`
+                    `應用名 ${currentEl} 重複，請確認後重新黏貼`,
                   );
                   return;
                 }
@@ -1531,17 +1557,17 @@ Adjust創建應用與開通帳號/授權應用extension
             }
 
             if (
-              element[0] === "权限" ||
-              element[0] === "權限" ||
-              element[0] === "授权" ||
-              element[0] === "授權"
+              normalizedKey === "权限" ||
+              normalizedKey === "權限" ||
+              normalizedKey === "授权" ||
+              normalizedKey === "授權"
             ) {
-              onSyncAppNameRole(element[1]);
+              onSyncAppNameRole(rawValue);
             }
           }
 
-          if (element[0] === "邮箱" || element[0] === "郵箱") {
-            onSyncEmail(element[1]);
+          if (normalizedKey === "邮箱" || normalizedKey === "郵箱") {
+            onSyncEmail(rawValue);
           }
         }
 
@@ -1596,7 +1622,7 @@ Adjust創建應用與開通帳號/授權應用extension
           // 非自定義角色
           handleError(
             null,
-            "此用戶為非自定義角色，無法自定義授權，請詢問開發人員"
+            "此用戶為非自定義角色，無法自定義授權，請詢問開發人員",
           );
         }
         if (!userData || !userData?.id) {
@@ -1604,12 +1630,20 @@ Adjust創建應用與開通帳號/授權應用extension
           const currentAccountInvited = res
             .filter((el) => el.status === STATUS_ACTIVE)
             .find((el) => el.user.email === emailInput);
+          // 邀請中的用戶尚未註冊
           if (!!currentAccountInvited) {
             handleError(
               null,
-              "此郵箱已邀請尚未註冊，先請客戶完成註冊在進行授權"
+              "此郵箱已邀請尚未註冊，先請客戶至開通帳號的郵箱收信, 並完成註冊, 在進行授權",
             );
           }
+          if (!currentAccountInvited) {
+            handleError(
+              null,
+              "此郵箱尚未邀請，授權成功後，客戶需要至開通帳號的郵箱收信",
+            );
+          }
+        
         }
       }
 
@@ -1756,7 +1790,7 @@ Adjust創建應用與開通帳號/授權應用extension
           // 非自定義角色
           handleError(
             null,
-            "此用戶為非自定義角色，無法自定義授權，請詢問開發人員"
+            "此用戶為非自定義角色，無法自定義授權，請詢問開發人員",
           );
           return;
         }
@@ -1805,7 +1839,7 @@ Adjust創建應用與開通帳號/授權應用extension
             // 檢查用戶是否已包含該應用
             const isMobileAppsIncludeApptoken =
               !!userData?.local_roles?.mobile_apps.find(
-                (el) => el.token === appItem.app_token
+                (el) => el.token === appItem.app_token,
               );
 
             return {
@@ -1838,7 +1872,7 @@ Adjust創建應用與開通帳號/授權應用extension
                 // userData?.local_roles?.mobile_apps中有的, 且transformedApps中isIncluded為true的, role改成role
                 ...userData?.local_roles?.mobile_apps.map((el) => {
                   const matchedApp = transformedApps.find(
-                    (app) => app.token === el.token && app.isIncluded
+                    (app) => app.token === el.token && app.isIncluded,
                   );
                   if (matchedApp) {
                     return {
@@ -1853,8 +1887,8 @@ Adjust創建應用與開通帳號/授權應用extension
                   .filter(
                     (app) =>
                       !userData?.local_roles?.mobile_apps.find(
-                        (el) => el.token === app.token
-                      ) && !app.isIncluded
+                        (el) => el.token === app.token,
+                      ) && !app.isIncluded,
                   )
                   .map((app) => ({
                     role,
