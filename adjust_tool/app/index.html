@@ -655,6 +655,8 @@ Adjust創建應用與開通帳號/授權應用extension
       const ROLE_EDITOR = "editor";
       const ROLE_READER = "reader";
       const STATUS_ACTIVE = "active";
+      const AUTH_RECOVERY_MAX_RETRY = 3;
+      const AUTH_RECOVERY_DELAY_MS = 800;
 
       // ===== 全域變數 =====
       let users = []; // 用戶列表
@@ -677,6 +679,7 @@ Adjust創建應用與開通帳號/授權應用extension
       let appNameAuthList = []; // 所有授權應用名列表
       let isAppNameAuthListValid = true; // 應用名列表是否都有效
       let isAppNameAuthListRepeat = false; // 應用名列表是否有重複
+      let isRecoveringAuthSession = false; // 避免登入恢復流程重入
 
       // ===== DOM 元素宣告 =====
       const createBtnEl = document.getElementById("createBtn"); // 綁定按鈕事件：創建應用
@@ -795,10 +798,14 @@ Adjust創建應用與開通帳號/授權應用extension
         });
 
         if (!!token) {
-          await getAccount();
+          await getAccount({ retryOnAuthFail: true });
         } else {
-          await login();
+          await recoverAuthSession();
         }
+      }
+
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
       }
 
       // 錯誤處理
@@ -854,7 +861,7 @@ Adjust創建應用與開通帳號/授權應用extension
       }
 
       // 登入
-      async function login() {
+      async function login({ autoFetchAccount = false } = {}) {
         const data = await fetchApi({
           apiUrl: `${adjustAccountPrefixUrl}users/sign_in`,
           method: "POST",
@@ -869,18 +876,18 @@ Adjust創建應用與開通帳號/授權應用extension
 
         if (data?.authentication_token) {
           localStorage.setItem("authToken", data.authentication_token);
-          getAccount();
+          if (autoFetchAccount) {
+            await getAccount({ retryOnAuthFail: false });
+          }
         }
+        return data;
       }
 
       // 取得登入資訊
-      async function getAccount() {
+      async function getAccount({ retryOnAuthFail = false } = {}) {
         const data = await fetchApi({
           apiUrl: `${adjustAccountPrefixUrl}current_account`,
           method: "GET",
-          errorCallback: () => {
-            login();
-          },
         });
 
         if (data?.id) {
@@ -892,6 +899,51 @@ Adjust創建應用與開通帳號/授權應用extension
           await getCurrencies();
           switchEl.textContent = "可使用";
           switchPotEl.style.background = "green";
+          return data;
+        }
+
+        if (retryOnAuthFail) {
+          await recoverAuthSession();
+        }
+        return false;
+      }
+
+      async function recoverAuthSession() {
+        if (isRecoveringAuthSession) return false;
+        isRecoveringAuthSession = true;
+
+        try {
+          for (
+            let attempt = 1;
+            attempt <= AUTH_RECOVERY_MAX_RETRY;
+            attempt += 1
+          ) {
+            const loginData = await login({ autoFetchAccount: false });
+            if (!loginData?.authentication_token) {
+              if (attempt < AUTH_RECOVERY_MAX_RETRY) {
+                await sleep(AUTH_RECOVERY_DELAY_MS * attempt);
+                continue;
+              }
+              break;
+            }
+
+            const accountData = await getAccount({ retryOnAuthFail: false });
+            if (accountData?.id) {
+              return true;
+            }
+
+            if (attempt < AUTH_RECOVERY_MAX_RETRY) {
+              await sleep(AUTH_RECOVERY_DELAY_MS * attempt);
+            }
+          }
+
+          handleError(
+            null,
+            "登入狀態恢復失敗，已停止自動重試，請稍後再試或重新整理頁面",
+          );
+          return false;
+        } finally {
+          isRecoveringAuthSession = false;
         }
       }
 
