@@ -113,6 +113,12 @@ try {
       if ($request.Headers["Authorization"]) {
         $requestMessage.Headers.TryAddWithoutValidation("Authorization", $request.Headers["Authorization"]) | Out-Null
       }
+      $incomingAccept = $request.Headers["Accept"]
+      if ([string]::IsNullOrWhiteSpace($incomingAccept) -or $incomingAccept -eq "*/*") {
+        $requestMessage.Headers.TryAddWithoutValidation("Accept", "application/json") | Out-Null
+      } else {
+        $requestMessage.Headers.TryAddWithoutValidation("Accept", $incomingAccept) | Out-Null
+      }
       if ($request.Headers["x-csrf-token"]) {
         $requestMessage.Headers.TryAddWithoutValidation("x-csrf-token", $request.Headers["x-csrf-token"]) | Out-Null
       }

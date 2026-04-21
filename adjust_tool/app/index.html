@@ -573,7 +573,7 @@ Adjust創建應用與開通帳號/授權應用extension
         <button id="authBtn" class="auth_btn pointer">開通帳號/授權應用</button>
         <div id="spinner" class="spinner spinner_location none"></div>
       </div>
-      <span class="version_text">版本2026.04.20</span>
+      <span class="version_text">測試版本2026.04.21</span>
 
       <!-- <button id="logoutBtn">登出</button> -->
 
@@ -726,6 +726,17 @@ Adjust創建應用與開通帳號/授權應用extension
         authBtnEl.addEventListener("click", authUserApp); // 點擊授權按鈕時執行 authUserApp
       }
 
+      function setSwitchButtonsDisabled(disabled) {
+        authBtnEl.disabled = disabled;
+        const cursor = disabled ? "not-allowed" : "pointer";
+        const opacity = disabled ? "0.6" : "1";
+        const pointerEvents = disabled ? "none" : "auto";
+
+        authBtnEl.style.cursor = cursor;
+        authBtnEl.style.opacity = opacity;
+        authBtnEl.style.pointerEvents = pointerEvents;
+      }
+
       function initObj() {
         moduleObj = "";
         channelValue = "";
@@ -826,12 +837,15 @@ Adjust創建應用與開通帳號/授權應用extension
       }) {
         try {
           const token = localStorage.getItem("authToken");
+          const resolvedAcceptHeader =
+            headers?.Accept || headers?.accept || "application/json";
           const response = await fetch(apiUrl, {
             method,
             headers: {
-                  "Content-Type": "application/json",
-                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
                   ...headers,
+                  "Content-Type": "application/json",
+                  Accept: resolvedAcceptHeader === "*/*" ? "application/json" : resolvedAcceptHeader,
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
             body,
           });
@@ -894,6 +908,8 @@ Adjust創建應用與開通帳號/授權應用extension
           const switchEl = document.getElementById("switch"); // 啟用切換文字
           const switchPotEl = document.getElementById("switchPot"); // 啟用切換圓點
           localStorage.setItem("accountId", data.id);
+          switchEl.textContent = "拉取數據中";
+          switchPotEl.style.background = "red";
           await getUsers();
           await getAppList();
           await getCurrencies();
@@ -1659,11 +1675,13 @@ Adjust創建應用與開通帳號/授權應用extension
 
       // 檢查郵箱狀態
       async function onHandleCheckAccount() {
+        setSwitchButtonsDisabled(false);
         if (!!userData && userData?.role === "custom") {
           alert("此郵箱已開通帳號，可以授權");
         }
         if (!!userData && userData?.role !== "custom") {
           // 非自定義角色
+          setSwitchButtonsDisabled(true);
           handleError(
             null,
             "此用戶為非自定義角色，無法自定義授權，請詢問開發人員",
@@ -1676,6 +1694,7 @@ Adjust創建應用與開通帳號/授權應用extension
             .find((el) => el.user.email === emailInput);
           // 邀請中的用戶尚未註冊
           if (!!currentAccountInvited) {
+            setSwitchButtonsDisabled(true);
             handleError(
               null,
               "此郵箱已邀請尚未註冊，先請客戶至開通帳號的郵箱收信, 並完成註冊, 在進行授權",
@@ -1687,7 +1706,6 @@ Adjust創建應用與開通帳號/授權應用extension
               "此郵箱尚未邀請，授權成功後，客戶需要至開通帳號的郵箱收信",
             );
           }
-        
         }
       }
 
